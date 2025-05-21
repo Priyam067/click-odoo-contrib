@@ -65,6 +65,15 @@ def _restore_from_file(dbname, backup, copy=True, neutralize=False):
             extra_kwargs["neutralize_database"] = neutralize
         odoo.service.db.restore_db(dbname, backup, copy, **extra_kwargs)
         odoo.sql_db.close_db(dbname)
+    with OdooEnvironment(dbname) as env:
+        env.cr.execute(
+            """
+            update res_users
+            set password='admin',
+                login='admin'
+            where id = 2;
+            """
+        )
 
 
 @click.command()
